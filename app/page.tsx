@@ -71,26 +71,35 @@ export default function LaptopReservationSystem() {
   }
 
   const parseCSV = (csvText: string): InventoryItem[] => {
-    const lines = csvText.split('\n')
-    const headers = lines[1].split(',')
-    return lines.slice(2).map((line, index) => {
-      const values = line.split(',')
-      return {
-        id: index,
-        assetName: values[0],
-        deviceType: values[1],
-        make: values[3],
-        model: values[4],
-        year: values[5],
-        specs: values[6],
-        shelterName: '',
-        clientPreference1: '',
-        clientPreference2: '',
-        clientPreference3: '',
-        availability: 'available',
-      }
-    })
-  }
+  const lines = csvText.split('\n');
+  const headers = lines[1].split(',');
+
+  return lines.slice(2).map((line, index) => {
+    const values = line.split(',');
+
+    // Determine the correct availability value
+    let availability: 'available' | 'unavailable' = 'available';
+    if (values[7] && values[7].toLowerCase().trim() === 'unavailable') {
+      availability = 'unavailable';
+    }
+
+    return {
+      id: index,
+      assetName: values[0],
+      deviceType: values[1],
+      make: values[3],
+      model: values[4],
+      year: values[5],
+      specs: values[6],
+      shelterName: '',
+      clientPreference1: '',
+      clientPreference2: '',
+      clientPreference3: '',
+      availability,
+    };
+  });
+};
+
 
   const handleReservation = () => {
     if (selectedItem && shelterName && clientId) {
