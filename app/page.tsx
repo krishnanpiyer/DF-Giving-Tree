@@ -102,50 +102,48 @@ export default function LaptopReservationSystem() {
 
 
   const handleReservation = () => {
-    if (selectedItem && shelterName && clientId) {
-      const userKey = `${shelterName}-${clientId}`
-      const currentUserReservations = userReservations[userKey] || {}
-      const deviceTypeReservations = currentUserReservations[selectedItem.deviceType] || []
+  if (selectedItem && shelterName && clientId) {
+    const userKey = `${shelterName}-${clientId}`;
+    const currentUserReservations = userReservations[userKey] || {};
+    const deviceTypeReservations = currentUserReservations[selectedItem.deviceType] || [];
 
-      if (deviceTypeReservations.length >= 2) {
-        alert("You've already selected two preferences for this device type.")
-        return
-      }
-
-      const updatedInventory = inventory.map(item => {
-        if (item.id === selectedItem.id) {
-          const updatedItem = {
-            ...item,
-            shelterName,
-            [`clientPreference${preference}`]: clientId,
-          }
-          if (preference === 1) {
-            updatedItem.availability = 'unavailable'
-          }
-          return updatedItem
-        }
-        return item
-      })
-
-      setInventory(updatedInventory)
-
-      // Update user reservations
-      setUserReservations(prev => ({
-        ...prev,
-        [userKey]: {
-          ...currentUserReservations,
-          [selectedItem.deviceType]: [...deviceTypeReservations, selectedItem.id.toString()]
-        }
-      }))
-
-      setSelectedItem(null)
-      setShelterName('')
-      setClientId('')
-      setPreference(1)
-      // Here you would typically send this data to your backend to update the actual file
-      console.log('Reservation made:', { itemId: selectedItem.id, shelterName, clientId, preference })
+    if (deviceTypeReservations.length >= 2) {
+      alert("You've already selected two preferences for this device type.");
+      return;
     }
+
+    const updatedInventory = inventory.map(item => {
+      if (item.id === selectedItem.id) {
+        const updatedItem = {
+          ...item,
+          shelterName,
+          [`clientPreference${preference}`]: clientId,
+          availability: preference === 1 ? 'unavailable' : item.availability, // Ensure it's either available or unavailable
+        };
+        return updatedItem;
+      }
+      return item;
+    });
+
+    setInventory(updatedInventory);
+
+    // Update user reservations
+    setUserReservations(prev => ({
+      ...prev,
+      [userKey]: {
+        ...currentUserReservations,
+        [selectedItem.deviceType]: [...deviceTypeReservations, selectedItem.id.toString()],
+      },
+    }));
+
+    setSelectedItem(null);
+    setShelterName('');
+    setClientId('');
+    setPreference(1);
+    console.log('Reservation made:', { itemId: selectedItem.id, shelterName, clientId, preference });
   }
+};
+
 
   const handleChangeReservation = (item: InventoryItem) => {
     setSelectedItem(item)
@@ -154,41 +152,41 @@ export default function LaptopReservationSystem() {
     setPreference(1)
   }
 
-  const handleRemoveReservation = () => {
-    if (selectedItem) {
-      const updatedInventory = inventory.map(item => {
-        if (item.id === selectedItem.id) {
-          return {
-            ...item,
-            shelterName: '',
-            clientPreference1: '',
-            clientPreference2: '',
-            clientPreference3: '',
-            availability: 'available',
-          }
-        }
-        return item
-      })
-
-      setInventory(updatedInventory)
-
-      // Remove the reservation from userReservations
-      const userKey = `${selectedItem.shelterName}-${selectedItem.clientPreference1}`
-      const updatedUserReservations = { ...userReservations }
-      if (updatedUserReservations[userKey] && updatedUserReservations[userKey][selectedItem.deviceType]) {
-        updatedUserReservations[userKey][selectedItem.deviceType] = updatedUserReservations[userKey][selectedItem.deviceType].filter(id => id !== selectedItem.id.toString())
+const handleRemoveReservation = () => {
+  if (selectedItem) {
+    const updatedInventory = inventory.map(item => {
+      if (item.id === selectedItem.id) {
+        return {
+          ...item,
+          shelterName: '',
+          clientPreference1: '',
+          clientPreference2: '',
+          clientPreference3: '',
+          availability: 'available' as 'available' | 'unavailable', // Explicitly set the type to avoid the issue
+        };
       }
-      setUserReservations(updatedUserReservations)
+      return item;
+    });
 
-      setSelectedItem(null)
-      setShelterName('')
-      setClientId('')
-      setPreference(1)
-      setShowRemoveDialog(false)
-      // Here you would typically send this data to your backend to update the actual file
-      console.log('Reservation removed:', { itemId: selectedItem.id })
+    setInventory(updatedInventory);
+
+    // Remove the reservation from userReservations
+    const userKey = `${selectedItem.shelterName}-${selectedItem.clientPreference1}`;
+    const updatedUserReservations = { ...userReservations };
+    if (updatedUserReservations[userKey] && updatedUserReservations[userKey][selectedItem.deviceType]) {
+      updatedUserReservations[userKey][selectedItem.deviceType] = updatedUserReservations[userKey][selectedItem.deviceType].filter(id => id !== selectedItem.id.toString());
     }
+    setUserReservations(updatedUserReservations);
+
+    setSelectedItem(null);
+    setShelterName('');
+    setClientId('');
+    setPreference(1);
+    setShowRemoveDialog(false);
+    console.log('Reservation removed:', { itemId: selectedItem.id });
   }
+};
+
 
   return (
     <div className="container mx-auto p-4 bg-gray-50 min-h-screen">
