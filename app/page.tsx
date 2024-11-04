@@ -237,12 +237,13 @@ const handleRemoveReservation = () => {
                   <TableCell>{item.year}</TableCell>
                   <TableCell>{item.specs}</TableCell>
                   <TableCell>
-                    <Badge 
-                      variant={item.availability === 'available' ? 'success' : 'destructive'}
-                      className={`${item.availability === 'available' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} px-2 py-1 rounded-full text-xs font-semibold`}
-                    >
-                      {item.availability}
-                    </Badge>
+<Badge 
+  variant={item.availability === 'available' ? 'default' : 'destructive'}
+  className={`${item.availability === 'available' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} px-2 py-1 rounded-full text-xs font-semibold`}
+>
+  {item.availability}
+</Badge>
+
                   </TableCell>
                   <TableCell>
                     <Dialog>
