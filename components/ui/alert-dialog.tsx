@@ -17,9 +17,12 @@ interface ExtendedAlertDialogPortalProps extends AlertDialogPrimitive.AlertDialo
 const AlertDialogPortal = ({
   className,
   ...props
-}: ExtendedAlertDialogPortalProps) => (
-  <AlertDialogPrimitive.Portal className={cn(className)} {...props} />
+}: AlertDialogPrimitive.AlertDialogPortalProps & { className?: string }) => (
+  <div className={cn(className)}>
+    <AlertDialogPrimitive.Portal {...props} />
+  </div>
 );
+
 
 AlertDialogPortal.displayName = AlertDialogPrimitive.Portal.displayName
 
